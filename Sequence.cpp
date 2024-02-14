@@ -50,76 +50,170 @@ namespace CS3358_SP2024
                                                                                    sequence::sequence(size_type initial_capacity)
    {
       // check inital_capacity validity
-      if (this->initial_capacity < 1)
-      {
-         this->capacity - 1;
-      }
+      if (initial_capacity < 1) {this->capacity = 1;}
       // create nwe dynamic sequence array
       this->data = new value_type[this->capacity];
    }
 
    sequence::sequence(const sequence &source){
-       this->used(source.used), current_index(source.current_index)}
-
-   sequence::~sequence()
-   {
-      cout << "~sequence() not implemented yet" << endl;
+      this->data = new value_type[capacity];
+      for (size_type index = 0; index < used;index++)
+      {
+         this->data[index] = source.data[capacity];
+      }
    }
+      sequence::~sequence()
+      {
+         delete[] this->data;
+         data = nullptr;
+      }
 
    // MODIFICATION MEMBER FUNCTIONS
    void sequence::resize(size_type new_capacity)
    {
-      cout << "resize(size_type new_capacity) not implemented yet" << endl;
+      //check validity of new_capacity
+      if (new_capacity < 1){new_capacity = 1;}
+      if (new_capacity < this->used){this->capacity = this->used;}
+      else{this->capacity = new_capacity;}
+      //create new dynamic array
+      value_type *temp_data = new value_type[capacity];
+      //copy contents to new location
+      for (size_type index = 0; index < used; ++index)
+      {
+         temp_data[index] = data[index];
+      }
+      //clean up (deallocate & move)
+      delete[] data;
+      data = temp_data;
    }
 
    void sequence::start()
    {
-      cout << "start() not implemented yet" << endl;
+      //set current index according to 4th invariant 
+      this->current_index = 0;
    }
 
    void sequence::advance()
    {
-      cout << "advance() not implemented yet" << endl;
+      //ensure pre-condition is met, if unmet terminate program
+      //else continue sequence::advance()
+      assert(is_item());
+      this->current_index = current_index + 1;
    }
 
    void sequence::insert(const value_type& entry)
    {
-      cout << "insert(const value_type& entry) not implemented yet" << endl;
+      if (this->used == this->capacity){
+         this->resize(size_type(1.25 * this->capacity) + 1);
+      }
+
+      if (!this->is_item()){
+         //No current item, insert element at the beginning of the 
+         //sequence or current_index == 0, starting from this->used+1 shift
+         // items towards to accomdate for insertion entry
+         this->sequence::start();
+         for (size_type index = this->used + 1; index > current_index;--index)
+         {
+            this->data[index] = data[index - 1];
+            this->used += 1;
+         }
+      } else {
+         // current item, insert entry at current_index-1,
+         //  starting from used+1 and onwards
+         for (size_type index = used + 1; index > current_index; --index){this->data[index] = this->data[index - 1];}
+         this->data[current_index] = entry;
+         this->used += 1;
+   
+      }
    }
+   
+   
 
    void sequence::attach(const value_type& entry)
    {
-      cout << "attach(const value_type& entry) not implemented yet" << endl;
+      // check if resize of data array is needed
+      // satisfy the resize rule via (current_capacity*1.25)+1
+      if (this->used == this->capacity)
+      {
+         this->resize(size_type(1.25 * this->capacity) + 1);
+      }
+
+      if (!this->is_item())
+      {
+         // No current item, attach anetry at end of sequence
+         // or current_index used. Make entry the current item
+         this->data[this->current_index] = entry;
+         this->used += 1;
+      }
    }
 
    void sequence::remove_current()
    {
-      cout << "remove_current() not implemented yet" << endl;
+      //ensure pre-condition is met, if unmet terminate program
+      //else continue function execution
+      assert(this->is_item());
+
+      //remove current and shift items leftward
+      for (size_type index = current_index; index < this->used - 1; index++)
+      {
+         this->data[index] = this->data[index + 1];
+      }
+      //update after removing item
+      this->used -= 1;
    }
 
    sequence& sequence::operator=(const sequence& source)
    {
-      cout << "operator=(const sequence& source) not implemented yet" << endl;
+      //self-assignment fail safe, if self 
+      //assignment is ppresent return invoking object
+      if (this == &source)
+      {
+
+      return *this;
+      }
+      // create temp data array to assign contents
+      value_type *temp_data = new value_type[source.capacity];
+
+      // Moved contents of rhs array to temp
+      for (size_type index = 0; index < source.used; index++)
+      {
+         temp_data[index] = source.data[index];
+      }
+
+      // Deallocate old dynamic array.
+      delete[] this->data;
+
+      // Start assigning member variables from rhs.
+      this->data = temp_data;
+      this->capacity = source.capacity;
+      this->used = source.used;
+      this->current_index = source.current_index;
+
       return *this;
    }
 
    // CONSTANT MEMBER FUNCTIONS
    sequence::size_type sequence::size() const
    {
-      cout << "size() not implemented yet" << endl;
-      return 0; // dummy value returned
+      //used is the same as the number of items in container instance
+      return this->used;
    }
 
    bool sequence::is_item() const
    {
-      cout << "is_item() not implemented yet" << endl;
-      return false; // dummy value returned
+      //conditions for invalid item:
+      // sequence is NOT empty, used == 0
+      // current index is not the last item in the data array
+      //aka : current_index == used
+      return current_index != used;
    }
 
    sequence::value_type sequence::current() const
    {
-      cout << "current() not implemented yet" << endl;
-      return value_type(); // dummy value returned
+      // ensure pre-condition is met, if unmet terminate program
+      // else return current item of the sequence
+      assert(this->is_item());
+      return this->data[current_index];
    }
 }
 
