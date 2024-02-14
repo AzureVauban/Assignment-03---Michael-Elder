@@ -46,90 +46,110 @@ using namespace std;
 namespace CS3358_SP2024
 {
    // CONSTRUCTORS and DESTRUCTOR
-   sequence::sequence(size_type initial_capacity) : used(0), current_index(0), capacity(initial_capacity)
-                                                                                   sequence::sequence(size_type initial_capacity)
+   sequence::sequence(size_type initial_capacity)
    {
       // check inital_capacity validity
-      if (initial_capacity < 1) {this->capacity = 1;}
+      if (initial_capacity < 1)
+      {
+         this->capacity = 1;
+      }
+      this->used = 0;
+      this->current_index = 0;
+      this->capacity = initial_capacity;
       // create nwe dynamic sequence array
       this->data = new value_type[this->capacity];
    }
 
-   sequence::sequence(const sequence &source){
+   sequence::sequence(const sequence &source)
+   {
       this->data = new value_type[capacity];
-      for (size_type index = 0; index < used;index++)
+      for (size_type index = 0; index < used; index++)
       {
          this->data[index] = source.data[capacity];
       }
    }
-      sequence::~sequence()
-      {
-         delete[] this->data;
-         data = nullptr;
-      }
+   sequence::~sequence()
+   {
+      delete[] this->data;
+      this->data = nullptr;
+   }
 
    // MODIFICATION MEMBER FUNCTIONS
    void sequence::resize(size_type new_capacity)
    {
-      //check validity of new_capacity
-      if (new_capacity < 1){new_capacity = 1;}
-      if (new_capacity < this->used){this->capacity = this->used;}
-      else{this->capacity = new_capacity;}
-      //create new dynamic array
+      // check validity of new_capacity
+      if (new_capacity < 1)
+      {
+         new_capacity = 1;
+      }
+      if (new_capacity < this->used)
+      {
+         this->capacity = this->used;
+      }
+      else
+      {
+         this->capacity = new_capacity;
+      }
+      // create new dynamic array
       value_type *temp_data = new value_type[capacity];
-      //copy contents to new location
+      // copy contents to new location
       for (size_type index = 0; index < used; ++index)
       {
          temp_data[index] = data[index];
       }
-      //clean up (deallocate & move)
+      // clean up (deallocate & move)
       delete[] data;
-      data = temp_data;
+      this->data = temp_data;
    }
 
    void sequence::start()
    {
-      //set current index according to 4th invariant 
+      // set current index according to 4th invariant
       this->current_index = 0;
    }
 
    void sequence::advance()
    {
-      //ensure pre-condition is met, if unmet terminate program
-      //else continue sequence::advance()
+      // ensure pre-condition is met, if unmet terminate program
+      // else continue sequence::advance()
       assert(is_item());
-      this->current_index = current_index + 1;
+      this->current_index = this->current_index + 1;
    }
 
-   void sequence::insert(const value_type& entry)
+   void sequence::insert(const value_type &entry)
    {
-      if (this->used == this->capacity){
+      if (this->used == this->capacity)
+      {
          this->resize(size_type(1.25 * this->capacity) + 1);
       }
 
-      if (!this->is_item()){
-         //No current item, insert element at the beginning of the 
-         //sequence or current_index == 0, starting from this->used+1 shift
+      if (!this->is_item())
+      {
+         // No current item, insert element at the beginning of the
+         // sequence or current_index == 0, starting from this->used+1 shift
          // items towards to accomdate for insertion entry
          this->sequence::start();
-         for (size_type index = this->used + 1; index > current_index;--index)
+         for (size_type index = this->used + 1; index > current_index; --index)
          {
             this->data[index] = data[index - 1];
             this->used += 1;
          }
-      } else {
+      }
+      else
+      {
          // current item, insert entry at current_index-1,
-         //  starting from used+1 and onwards
-         for (size_type index = used + 1; index > current_index; --index){this->data[index] = this->data[index - 1];}
+         // starting from used+1 and onwards
+         for (size_type index = this->used + 1; index > this->current_index;
+              index--)
+         {
+            this->data[index] = this->data[index - 1];
+         }
          this->data[current_index] = entry;
          this->used += 1;
-   
       }
    }
-   
-   
 
-   void sequence::attach(const value_type& entry)
+   void sequence::attach(const value_type &entry)
    {
       // check if resize of data array is needed
       // satisfy the resize rule via (current_capacity*1.25)+1
@@ -149,27 +169,27 @@ namespace CS3358_SP2024
 
    void sequence::remove_current()
    {
-      //ensure pre-condition is met, if unmet terminate program
-      //else continue function execution
+      // ensure pre-condition is met, if unmet terminate program
+      // else continue function execution
       assert(this->is_item());
 
-      //remove current and shift items leftward
+      // remove current and shift items leftward
       for (size_type index = current_index; index < this->used - 1; index++)
       {
          this->data[index] = this->data[index + 1];
       }
-      //update after removing item
+      // update after removing item
       this->used -= 1;
    }
 
-   sequence& sequence::operator=(const sequence& source)
+   sequence &sequence::operator=(const sequence &source)
    {
-      //self-assignment fail safe, if self 
-      //assignment is ppresent return invoking object
+      // self-assignment fail safe, if self
+      // assignment is ppresent return invoking object
       if (this == &source)
       {
 
-      return *this;
+         return *this;
       }
       // create temp data array to assign contents
       value_type *temp_data = new value_type[source.capacity];
@@ -195,17 +215,17 @@ namespace CS3358_SP2024
    // CONSTANT MEMBER FUNCTIONS
    sequence::size_type sequence::size() const
    {
-      //used is the same as the number of items in container instance
+      // used is the same as the number of items in container instance
       return this->used;
    }
 
    bool sequence::is_item() const
    {
-      //conditions for invalid item:
+      // conditions for invalid item:
       // sequence is NOT empty, used == 0
       // current index is not the last item in the data array
-      //aka : current_index == used
-      return current_index != used;
+      // aka : current_index == used
+      return this->current_index != this->used;
    }
 
    sequence::value_type sequence::current() const
@@ -216,4 +236,3 @@ namespace CS3358_SP2024
       return this->data[current_index];
    }
 }
-
