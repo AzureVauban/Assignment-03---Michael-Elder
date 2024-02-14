@@ -46,15 +46,20 @@ using namespace std;
 namespace CS3358_SP2024
 {
    // CONSTRUCTORS and DESTRUCTOR
-   sequence::sequence(size_type initial_capacity)
+   sequence::sequence(size_type initial_capacity) : used(0), current_index(0), capacity(initial_capacity)
+                                                                                   sequence::sequence(size_type initial_capacity)
    {
-      cout << "sequence(size_type initial_capacity) not implemented yet" << endl;
+      // check inital_capacity validity
+      if (this->initial_capacity < 1)
+      {
+         this->capacity - 1;
+      }
+      // create nwe dynamic sequence array
+      this->data = new value_type[this->capacity];
    }
 
-   sequence::sequence(const sequence& source)
-   {
-      cout << "sequence(const sequence& source) not implemented yet" << endl;
-   }
+   sequence::sequence(const sequence &source){
+       this->used(source.used), current_index(source.current_index)}
 
    sequence::~sequence()
    {
